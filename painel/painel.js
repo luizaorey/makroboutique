@@ -261,7 +261,7 @@
           <div class="name">${escapeHtml(c.nome)}</div>
           <div class="meta">${c.total_compras} compra(s)</div>
         </div>
-        <div style="font-family:'Playfair Display',serif;color:var(--ouro-cl)">${formataMoeda(c.total_gasto)}</div>
+        <div style="color:var(--gold-fg);font-weight:700">${formataMoeda(c.total_gasto)}</div>
       </div>
     `).join("");
     $$("#lista-ranking .list-row").forEach((row) => {
@@ -293,7 +293,7 @@
           <div class="name">${escapeHtml(c.nome)}</div>
           <div class="meta">${formataTelefoneExibicao(c.telefone)}</div>
         </div>
-        <div style="font-family:'Playfair Display',serif;color:var(--ouro-cl);font-size:14px">${formataMoeda(c.total_gasto)}</div>
+        <div style="color:var(--gold-fg);font-weight:700;font-size:14px">${formataMoeda(c.total_gasto)}</div>
         <a class="wpp-ico" href="https://wa.me/${normalizaTelefone(c.telefone)}" target="_blank" rel="noopener"
            aria-label="WhatsApp de ${escapeHtml(c.nome)}" onclick="event.stopPropagation()">
           <svg><use href="#wpp"/></svg>
