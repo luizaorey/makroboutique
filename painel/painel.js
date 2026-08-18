@@ -98,6 +98,54 @@
     mostraLogin();
   });
 
+  // ---------- criar login (primeiro acesso) ----------
+  $("#link-mostrar-criar-login").addEventListener("click", (e) => {
+    e.preventDefault();
+    $("#login-form").classList.add("hidden");
+    $("#link-mostrar-criar-login").classList.add("hidden");
+    $("#signup-form").classList.remove("hidden");
+    $("#link-mostrar-login").classList.remove("hidden");
+  });
+
+  $("#link-mostrar-login").addEventListener("click", (e) => {
+    e.preventDefault();
+    $("#signup-form").classList.add("hidden");
+    $("#link-mostrar-login").classList.add("hidden");
+    $("#login-form").classList.remove("hidden");
+    $("#link-mostrar-criar-login").classList.remove("hidden");
+  });
+
+  $("#signup-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    mostraErro("#signup-error", "");
+    const email = $("#signup-email").value.trim();
+    const senha = $("#signup-senha").value;
+    const senha2 = $("#signup-senha2").value;
+
+    if (senha !== senha2) {
+      mostraErro("#signup-error", "As senhas não são iguais.");
+      return;
+    }
+    if (senha.length < 6) {
+      mostraErro("#signup-error", "A senha precisa ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    const { data, error } = await sb.auth.signUp({ email, password: senha });
+    if (error) {
+      mostraErro("#signup-error", "Não foi possível criar o login: " + error.message);
+      return;
+    }
+    if (data.session) {
+      await mostraApp();
+      return;
+    }
+    mostraErro(
+      "#signup-error",
+      "Login criado! Se o Supabase pedir confirmação por e-mail, verifique sua caixa de entrada antes de entrar."
+    );
+  });
+
   // ---------- navegação por abas ----------
   $$(".tabs button").forEach((btn) => {
     btn.addEventListener("click", () => trocarView(btn.dataset.view));

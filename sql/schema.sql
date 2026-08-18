@@ -21,20 +21,33 @@ create table if not exists compras (
 
 create index if not exists compras_cliente_id_idx on compras (cliente_id);
 
+create table if not exists admins (
+  email text primary key
+);
+
 alter table clientes enable row level security;
 alter table compras enable row level security;
+alter table admins enable row level security;
 
--- Só usuários autenticados (a lojista, logada no painel) podem ler/escrever.
--- Não há acesso público (anon) a dados de clientes.
-create policy "clientes: acesso autenticado" on clientes
-  for all
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+create policy "admins: ve a si mesmo" on admins
+  for select
+  using (email = auth.jwt() ->> 'email');
 
-create policy "compras: acesso autenticado" on compras
+-- Só e-mails cadastrados em "admins" podem ler/escrever clientes e compras
+-- (não basta estar logado — qualquer um poderia criar conta e ver tudo).
+create policy "clientes: apenas admins" on clientes
   for all
-  using (auth.role() = 'authenticated')
-  with check (auth.role() = 'authenticated');
+  using (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'))
+  with check (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'));
+
+create policy "compras: apenas admins" on compras
+  for all
+  using (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'))
+  with check (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'));
+
+-- Troque pelo e-mail de quem vai logar no painel (rode de novo pra adicionar outros).
+insert into admins (email) values ('luizaorey@gmail.com')
+  on conflict do nothing;
 
 -- View com total gasto e nº de compras por cliente (ranking de fidelidade).
 -- security_invoker garante que a view respeita a RLS de quem consulta, não do dono da view.

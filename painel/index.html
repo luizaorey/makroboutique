@@ -32,6 +32,25 @@
       <div class="error-msg" id="login-error"></div>
       <button type="submit" class="btn btn-ouro">Entrar</button>
     </form>
+    <a href="#" class="toggle-link" id="link-mostrar-criar-login">Primeiro acesso? Criar login</a>
+
+    <form id="signup-form" class="hidden">
+      <div class="field">
+        <label for="signup-email">E-mail</label>
+        <input id="signup-email" type="email" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="signup-senha">Senha (mínimo 6 caracteres)</label>
+        <input id="signup-senha" type="password" autocomplete="new-password" minlength="6" required>
+      </div>
+      <div class="field">
+        <label for="signup-senha2">Confirmar senha</label>
+        <input id="signup-senha2" type="password" autocomplete="new-password" minlength="6" required>
+      </div>
+      <div class="error-msg" id="signup-error"></div>
+      <button type="submit" class="btn btn-ouro">Criar login</button>
+    </form>
+    <a href="#" class="toggle-link hidden" id="link-mostrar-login">Já tenho login. Entrar</a>
   </div>
 </div>
 
