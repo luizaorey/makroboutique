@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel · Makro Boutique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="painel.css?v=1">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="wpp" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.517 5.26l-.999 3.648 3.971-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></symbol>
+</svg>
+
+<!-- ---------- LOGIN ---------- -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">MB</div>
+    <div class="sub">Makro Boutique · Painel</div>
+    <div class="rule"></div>
+    <form id="login-form">
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" type="email" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="login-senha">Senha</label>
+        <input id="login-senha" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="error-msg" id="login-error"></div>
+      <button type="submit" class="btn btn-ouro">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- ---------- APP ---------- -->
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">MB</span>
+      <span class="tag">Painel</span>
+    </div>
+    <nav class="tabs">
+      <button data-view="painel" class="active">Painel</button>
+      <button data-view="clientes">Clientes</button>
+    </nav>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" id="btn-logout">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== VIEW: PAINEL (KPIs) ===== -->
+    <section class="view active" id="view-painel">
+      <div class="view-head">
+        <div class="kicker" id="painel-mes"></div>
+        <h1>Bom te ver por aqui</h1>
+        <p class="lead">Um resumo das suas clientes e das compras da boutique.</p>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="lbl">Clientes cadastradas</div>
+          <div class="val" id="kpi-clientes">–</div>
+        </div>
+        <div class="kpi highlight">
+          <div class="lbl">Aniversariantes no mês</div>
+          <div class="val" id="kpi-aniversariantes">–</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Total em compras</div>
+          <div class="val" id="kpi-total">–</div>
+          <div class="sub">Somando todo o histórico registrado</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Cliente mais recente</div>
+          <div class="val" id="kpi-recente" style="font-size:18px">–</div>
+          <div class="sub" id="kpi-recente-data"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Aniversariantes do mês</h2>
+        <p class="desc">Uma boa desculpa pra mandar mensagem ou oferta especial.</p>
+        <div id="lista-aniversariantes"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Clientes mais fiéis</h2>
+        <p class="desc">Ranking por total gasto na loja.</p>
+        <div id="lista-ranking"></div>
+      </div>
+    </section>
+
+    <!-- ===== VIEW: CLIENTES (lista) ===== -->
+    <section class="view" id="view-clientes">
+      <div class="view-head">
+        <div class="kicker">Clientes</div>
+        <h1>Todas as clientes</h1>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <input id="busca-cliente" type="text" placeholder="Buscar por nome ou telefone...">
+        </div>
+      </div>
+      <div class="panel" style="padding-bottom:14px">
+        <div id="lista-clientes"></div>
+      </div>
+    </section>
+
+    <!-- ===== VIEW: DETALHE DO CLIENTE ===== -->
+    <section class="view" id="view-cliente-detalhe">
+      <a class="back-link" id="btn-voltar-clientes">← Voltar para clientes</a>
+      <div class="cliente-head">
+        <div class="avatar" id="detalhe-avatar"></div>
+        <div>
+          <h1 id="detalhe-nome"></h1>
+          <div class="phone-row">
+            <span id="detalhe-telefone"></span>
+            <a class="wpp-ico" id="detalhe-wpp" target="_blank" rel="noopener" aria-label="Abrir WhatsApp">
+              <svg><use href="#wpp"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="cliente-actions">
+          <button class="btn btn-ghost" id="btn-editar-cliente">Editar</button>
+          <button class="btn btn-danger" id="btn-excluir-cliente">Excluir</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <div class="kpi">
+          <div class="lbl">Aniversário</div>
+          <div class="val" id="detalhe-aniversario" style="font-size:18px">–</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Total gasto</div>
+          <div class="val" id="detalhe-total" style="font-size:18px">–</div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Compras</div>
+          <div class="val" id="detalhe-qtd-compras" style="font-size:18px">–</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar" style="margin-bottom:8px">
+          <h2 style="margin:0">Histórico de compras</h2>
+          <button class="btn btn-ouro" id="btn-nova-compra" style="padding:9px 16px">+ Registrar compra</button>
+        </div>
+        <div id="lista-compras"></div>
+      </div>
+    </section>
+  </main>
+
+  <button class="fab-add" id="btn-nova-cliente" title="Nova cliente" aria-label="Nova cliente">+</button>
+</div>
+
+<!-- ---------- MODAL: cliente ---------- -->
+<div class="modal-overlay hidden" id="modal-cliente">
+  <div class="modal">
+    <h2 id="modal-cliente-titulo">Nova cliente</h2>
+    <form id="form-cliente">
+      <div class="field">
+        <label for="cliente-nome">Nome</label>
+        <input id="cliente-nome" type="text" required>
+      </div>
+      <div class="field">
+        <label for="cliente-telefone">WhatsApp (com DDD)</label>
+        <input id="cliente-telefone" type="tel" placeholder="71 99812-4477" required>
+      </div>
+      <div class="field">
+        <label for="cliente-nascimento">Data de nascimento</label>
+        <input id="cliente-nascimento" type="date">
+      </div>
+      <div class="error-msg" id="cliente-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-cancelar-cliente">Cancelar</button>
+        <button type="submit" class="btn btn-ouro">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ---------- MODAL: compra ---------- -->
+<div class="modal-overlay hidden" id="modal-compra">
+  <div class="modal">
+    <h2>Registrar compra</h2>
+    <form id="form-compra">
+      <div class="field">
+        <label for="compra-valor">Valor (R$)</label>
+        <input id="compra-valor" type="number" step="0.01" min="0" required>
+      </div>
+      <div class="field">
+        <label for="compra-data">Data</label>
+        <input id="compra-data" type="date" required>
+      </div>
+      <div class="error-msg" id="compra-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-cancelar-compra">Cancelar</button>
+        <button type="submit" class="btn btn-ouro">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="painel.js?v=1"></script>
+</body>
+</html>
