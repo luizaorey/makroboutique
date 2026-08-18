@@ -6,8 +6,16 @@ create extension if not exists "pgcrypto";
 create table if not exists clientes (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
+  apelido text,
+  email text,
+  endereco text,
   telefone text not null, -- formato: DDI+DDD+numero, ex: 5571998124477
   data_nascimento date,
+  tamanho_manequim text,
+  estilo_preferido text,
+  cores_preferidas text,
+  restricoes text,
+  observacoes text,
   criado_em timestamptz not null default now()
 );
 
@@ -16,10 +24,23 @@ create table if not exists compras (
   cliente_id uuid not null references clientes(id) on delete cascade,
   valor numeric(10,2) not null check (valor >= 0),
   data_compra date not null default current_date,
+  itens text,
+  forma_pagamento text,
+  observacao text,
   criado_em timestamptz not null default now()
 );
 
 create index if not exists compras_cliente_id_idx on compras (cliente_id);
+
+create table if not exists datas_especiais (
+  id uuid primary key default gen_random_uuid(),
+  cliente_id uuid not null references clientes(id) on delete cascade,
+  descricao text not null,
+  data date not null,
+  criado_em timestamptz not null default now()
+);
+
+create index if not exists datas_especiais_cliente_id_idx on datas_especiais (cliente_id);
 
 create table if not exists admins (
   email text primary key
@@ -27,6 +48,7 @@ create table if not exists admins (
 
 alter table clientes enable row level security;
 alter table compras enable row level security;
+alter table datas_especiais enable row level security;
 alter table admins enable row level security;
 
 create policy "admins: ve a si mesmo" on admins
@@ -41,6 +63,11 @@ create policy "clientes: apenas admins" on clientes
   with check (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'));
 
 create policy "compras: apenas admins" on compras
+  for all
+  using (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'))
+  with check (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'));
+
+create policy "datas_especiais: apenas admins" on datas_especiais
   for all
   using (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'))
   with check (exists (select 1 from admins a where a.email = auth.jwt() ->> 'email'));

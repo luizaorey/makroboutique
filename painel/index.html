@@ -6,7 +6,7 @@
 <title>Painel · Makro Boutique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="painel.css?v=3">
+<link rel="stylesheet" href="painel.css?v=4">
 </head>
 <body>
 
@@ -123,6 +123,11 @@
         <div class="search">
           <input id="busca-cliente" type="text" placeholder="Buscar por nome ou telefone...">
         </div>
+        <div class="toolbar-actions">
+          <button class="btn btn-ghost" id="btn-exportar-csv">Exportar CSV</button>
+          <button class="btn btn-ghost" id="btn-importar-backup">Importar backup</button>
+          <button class="btn btn-ghost" id="btn-exportar-backup">Exportar backup</button>
+        </div>
       </div>
       <div class="panel" style="padding-bottom:14px">
         <div id="lista-clientes"></div>
@@ -132,7 +137,7 @@
     <!-- ===== VIEW: DETALHE DO CLIENTE ===== -->
     <section class="view" id="view-cliente-detalhe">
       <a class="back-link" id="btn-voltar-clientes">← Voltar para clientes</a>
-      <div class="cliente-head">
+      <div class="cliente-head" id="ficha-imprimir">
         <div class="avatar" id="detalhe-avatar"></div>
         <div>
           <h1 id="detalhe-nome"></h1>
@@ -143,7 +148,8 @@
             </a>
           </div>
         </div>
-        <div class="cliente-actions">
+        <div class="cliente-actions no-print">
+          <button class="btn btn-ghost" id="btn-imprimir-ficha">Imprimir ficha</button>
           <button class="btn btn-ghost" id="btn-editar-cliente">Editar</button>
           <button class="btn btn-danger" id="btn-excluir-cliente">Excluir</button>
         </div>
@@ -164,12 +170,45 @@
         </div>
       </div>
 
+      <div id="print-extra">
       <div class="panel">
-        <div class="toolbar" style="margin-bottom:8px">
+        <h2>Dados pessoais</h2>
+        <div class="ficha-grid">
+          <div><span class="ficha-lbl">E-mail</span><span class="ficha-val" id="detalhe-email">–</span></div>
+          <div><span class="ficha-lbl">Endereço</span><span class="ficha-val" id="detalhe-endereco">–</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Preferências</h2>
+        <div class="ficha-grid">
+          <div><span class="ficha-lbl">Tamanho / manequim</span><span class="ficha-val" id="detalhe-tamanho">–</span></div>
+          <div><span class="ficha-lbl">Estilo preferido</span><span class="ficha-val" id="detalhe-estilo">–</span></div>
+          <div><span class="ficha-lbl">Cores preferidas</span><span class="ficha-val" id="detalhe-cores">–</span></div>
+          <div><span class="ficha-lbl">Restrições</span><span class="ficha-val" id="detalhe-restricoes">–</span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="painel-observacoes-wrap">
+        <h2>Observações gerais</h2>
+        <p class="ficha-val" id="detalhe-observacoes">–</p>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar no-print" style="margin-bottom:8px">
+          <h2 style="margin:0">Datas especiais</h2>
+          <button class="btn btn-ghost" id="btn-nova-data-especial" style="padding:9px 16px">+ Adicionar</button>
+        </div>
+        <div id="lista-datas-especiais"></div>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar no-print" style="margin-bottom:8px">
           <h2 style="margin:0">Histórico de compras</h2>
           <button class="btn btn-ouro" id="btn-nova-compra" style="padding:9px 16px">+ Registrar compra</button>
         </div>
         <div id="lista-compras"></div>
+      </div>
       </div>
     </section>
   </main>
@@ -179,21 +218,65 @@
 
 <!-- ---------- MODAL: cliente ---------- -->
 <div class="modal-overlay hidden" id="modal-cliente">
-  <div class="modal">
+  <div class="modal modal-lg">
     <h2 id="modal-cliente-titulo">Nova cliente</h2>
     <form id="form-cliente">
+      <div class="form-secao">Dados pessoais</div>
       <div class="field">
-        <label for="cliente-nome">Nome</label>
+        <label for="cliente-nome">Nome completo</label>
         <input id="cliente-nome" type="text" required>
       </div>
-      <div class="field">
-        <label for="cliente-telefone">WhatsApp (com DDD)</label>
-        <input id="cliente-telefone" type="tel" placeholder="71 99812-4477" required>
+      <div class="field-row">
+        <div class="field">
+          <label for="cliente-apelido">Como gosta de ser chamada</label>
+          <input id="cliente-apelido" type="text">
+        </div>
+        <div class="field">
+          <label for="cliente-nascimento">Data de nascimento</label>
+          <input id="cliente-nascimento" type="date">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="cliente-telefone">WhatsApp (com DDD)</label>
+          <input id="cliente-telefone" type="tel" placeholder="71 99812-4477" required>
+        </div>
+        <div class="field">
+          <label for="cliente-email">E-mail</label>
+          <input id="cliente-email" type="email">
+        </div>
       </div>
       <div class="field">
-        <label for="cliente-nascimento">Data de nascimento</label>
-        <input id="cliente-nascimento" type="date">
+        <label for="cliente-endereco">Endereço</label>
+        <input id="cliente-endereco" type="text" placeholder="Rua, número — bairro, cidade/UF">
       </div>
+
+      <div class="form-secao">Preferências</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="cliente-tamanho">Tamanho / manequim</label>
+          <input id="cliente-tamanho" type="text" placeholder="38 / M">
+        </div>
+        <div class="field">
+          <label for="cliente-estilo">Estilo preferido</label>
+          <input id="cliente-estilo" type="text" placeholder="Clássico com toques modernos">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cliente-cores">Cores preferidas</label>
+        <input id="cliente-cores" type="text" placeholder="Off-white, caramelo, verde-oliva">
+      </div>
+      <div class="field">
+        <label for="cliente-restricoes">Restrições / observações de estilo</label>
+        <input id="cliente-restricoes" type="text" placeholder="Não usa decote profundo">
+      </div>
+
+      <div class="form-secao">Observações gerais</div>
+      <div class="field">
+        <label for="cliente-observacoes">Notas sobre a cliente</label>
+        <textarea id="cliente-observacoes" rows="2" placeholder="Compra sempre no início do mês. Gosta de receber fotos por WhatsApp."></textarea>
+      </div>
+
       <div class="error-msg" id="cliente-error"></div>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" id="btn-cancelar-cliente">Cancelar</button>
@@ -203,18 +286,56 @@
   </div>
 </div>
 
+<!-- ---------- MODAL: data especial ---------- -->
+<div class="modal-overlay hidden" id="modal-data-especial">
+  <div class="modal">
+    <h2>Data especial</h2>
+    <form id="form-data-especial">
+      <div class="field">
+        <label for="data-especial-descricao">Descrição</label>
+        <input id="data-especial-descricao" type="text" placeholder="Aniversário de casamento" required>
+      </div>
+      <div class="field">
+        <label for="data-especial-data">Data</label>
+        <input id="data-especial-data" type="date" required>
+      </div>
+      <div class="error-msg" id="data-especial-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-cancelar-data-especial">Cancelar</button>
+        <button type="submit" class="btn btn-ouro">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<input type="file" id="input-importar-backup" accept="application/json" class="hidden">
+
 <!-- ---------- MODAL: compra ---------- -->
 <div class="modal-overlay hidden" id="modal-compra">
   <div class="modal">
     <h2>Registrar compra</h2>
     <form id="form-compra">
-      <div class="field">
-        <label for="compra-valor">Valor (R$)</label>
-        <input id="compra-valor" type="number" step="0.01" min="0" required>
+      <div class="field-row">
+        <div class="field">
+          <label for="compra-valor">Valor (R$)</label>
+          <input id="compra-valor" type="number" step="0.01" min="0" required>
+        </div>
+        <div class="field">
+          <label for="compra-data">Data</label>
+          <input id="compra-data" type="date" required>
+        </div>
       </div>
       <div class="field">
-        <label for="compra-data">Data</label>
-        <input id="compra-data" type="date" required>
+        <label for="compra-itens">Itens comprados</label>
+        <input id="compra-itens" type="text" placeholder="Vestido midi linho + cinto trançado">
+      </div>
+      <div class="field">
+        <label for="compra-forma-pagamento">Forma de pagamento</label>
+        <input id="compra-forma-pagamento" type="text" placeholder="Pix, Cartão 2x...">
+      </div>
+      <div class="field">
+        <label for="compra-observacao">Observação</label>
+        <input id="compra-observacao" type="text">
       </div>
       <div class="error-msg" id="compra-error"></div>
       <div class="modal-actions">
@@ -227,6 +348,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="painel.js?v=2"></script>
+<script src="painel.js?v=3"></script>
 </body>
 </html>
